@@ -1,0 +1,31 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract TimeCapsule {
+    uint256 public immutable closingTime;
+    bool public isClosed;
+    address public owner;
+    string private message;
+
+    event CapsuleClosed(string message);
+
+    constructor() {
+        owner = msg.sender;
+        closingTime = block.timestamp + 30 days; // Capsule closes in 30 days
+        isClosed = false;
+        message = "This is a time capsule message!";
+    }
+
+    function retrieveMessage() public view returns (string memory) {
+        require(block.timestamp >= closingTime, "Time capsule is still locked");
+        return message;
+    }
+
+    function closeCapsule() public {
+        require(block.timestamp >= closingTime, "Cannot close yet");
+        require(!isClosed, "Capsule already closed");
+
+        isClosed = true;
+        emit CapsuleClosed(message);
+    }
+}
